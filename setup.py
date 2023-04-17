@@ -10,16 +10,6 @@ from setuptools import setup
 from torch.utils import cpp_extension
 
 
-@lru_cache(None)
-def cuda_toolkit_available():
-    # https://github.com/idiap/fast-transformers/blob/master/setup.py
-    try:
-        call(["nvcc"], stdout=DEVNULL, stderr=DEVNULL)
-        return True
-    except FileNotFoundError:
-        return False
-
-
 def compile_args():
     args = ["-fopenmp", "-ffast-math"]
     if sys.platform == "darwin":
@@ -35,13 +25,6 @@ def ext_modules():
             extra_compile_args=compile_args(),
         ),
     ]
-    if cuda_toolkit_available():
-        extensions.append(
-            cpp_extension.CUDAExtension(
-                "torchsort.isotonic_cuda",
-                sources=["torchsort/isotonic_cuda.cu"],
-            ),
-        )
     return extensions
 
 
